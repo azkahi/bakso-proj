@@ -32,7 +32,7 @@ class SocketWrapper {
         return this.socket;
     }
 
-    connect(url: string, options = {}) {
+    connect(options = {}) {
         this.socket = io(url, options);
         return this.socket;
     }

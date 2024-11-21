@@ -6,12 +6,19 @@ import UserRepository from '../../../core/repository/UserRepository';
 import UserMapManager from "../../../core/usecase/UserMapManager"
 import UserManager from '../../../core/usecase/UserManagement';
 import User, { ListUsers } from '../../../core/entity/User';
+import socketWrapper from "../../../infrastructure/utils/Socket";
 
 export default function HomeViewModel(userRepository: UserRepository) {
     const userMapManager = new UserMapManager(userRepository)
     const userManager = new UserManager(userRepository)
     const [listUsers, updateListUsers] = useState<{ [key: string]: User }>({});
     const [map, setMap] = useState(null)
+    
+    async function init() {
+        await socketWrapper.connect()
+        socketWrapper.on('customerListUpdate', getListUsers);
+        socketWrapper.on('sellerListUpdate', getListUsers);
+    }
 
     async function getListUsers() {
         const listUserResponse: ListUsers = await userMapManager.getListUsers()
@@ -44,6 +51,7 @@ export default function HomeViewModel(userRepository: UserRepository) {
         getRole,
         map,
         setMap,
-        getMarkers
+        getMarkers,
+        init
     }
 }

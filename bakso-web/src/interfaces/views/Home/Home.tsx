@@ -25,7 +25,7 @@ function HomePage() {
         googleMapsApiKey: API_KEY ? API_KEY : '',
     })
 
-    const { listUsers, getListUsers, getRole, map, setMap, getMarkers } = HomeViewModel(UserRepositoryInMemory.getInstance())
+    const { listUsers, getListUsers, getRole, map, setMap, getMarkers, init } = HomeViewModel(UserRepositoryInMemory.getInstance())
 
     const onLoad = useCallback((map: any) => {
         const bounds = new window.google.maps.LatLngBounds(center);
@@ -39,6 +39,7 @@ function HomePage() {
     }, [])
 
     useEffect(() => {
+        init()
         getListUsers()
     }, [])
 

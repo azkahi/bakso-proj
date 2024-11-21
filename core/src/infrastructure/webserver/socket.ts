@@ -1,9 +1,7 @@
 
 import { Server } from 'socket.io';
 
-const port = process.env.SERVER_PORT;
-
-const ALLOWED_ORIGINS = ['https://alim.center', `http://localhost:${port}`];
+const ALLOWED_ORIGINS = ['https://alim.center', `http://localhost`];
 
 const io = new Server({
     cors: {

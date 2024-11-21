@@ -49,12 +49,12 @@ class UsersController {
         const sellersJSON = JSON.stringify(sellers);
 
         if (customersJSON !== this.lastEmittedCustomers) {
-            io.to('sellers').emit('customerListUpdate', customers);
+            io.emit('customerListUpdate', customers);
             this.lastEmittedCustomers = customersJSON;
         }
 
         if (sellersJSON !== this.lastEmittedSellers) {
-            io.to('customers').emit('sellerListUpdate', sellers);
+            io.emit('sellerListUpdate', sellers);
             this.lastEmittedSellers = sellersJSON;
         }
     }
