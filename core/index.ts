@@ -1,5 +1,9 @@
-import { initServer } from './src/infrastructure/webserver/express';
+import { initServer, startServer } from './src/infrastructure/webserver/express';
 
-// const bootstrap = require('./lib/infrastructure/config/bootstrap');
+import { createRouter } from './src/interfaces/routes/routes';
 
-initServer();
+const router = createRouter();
+
+const app = initServer(router);
+
+startServer(app);

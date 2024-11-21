@@ -2,15 +2,21 @@ import UserRepository from "../../core/repository/UserRepository";
 import UserRepositoryInMemory from "../../infrastructure/repositories/UserRepositoryInMemory";
 import User, { ListUsers } from "../../core/entity/User";
 import { getIO } from "../../infrastructure/webserver/socket";
+import UserManager from "../../core/usecase/UserManagement";
+import UserMapManager from "../../core/usecase/UserMapManager";
 
 class UsersController {
     private static instance: UsersController;
     private repo: UserRepository;
+    private useCase: UserManager;
+    private useCaseMap: UserMapManager;
     private lastEmittedCustomers: string = '';
     private lastEmittedSellers: string = '';
 
     constructor() {
         this.repo = new UserRepositoryInMemory();
+        this.useCase = new UserManager(this.repo);
+        this.useCaseMap = new UserMapManager(this.repo);
     }
 
     public static getInstance(): UsersController {
@@ -64,7 +70,7 @@ class UsersController {
     public async createUser(name: string, role: string, gps_x?: number, gps_y?: number): Promise<string> {
         try {
             this.validateParams({ name, role }, ['name', 'role']);
-            const result = await this.repo.createUser(name, role, gps_x, gps_y);
+            const result = await this.useCase.loginUser(name, role, gps_x, gps_y);
             this.emitUserListChanges();
             return result;
         } catch (e) {
@@ -75,7 +81,7 @@ class UsersController {
     public async deleteUser(id: string): Promise<string> {
         try {
             this.validateParams({ id }, ['id']);
-            const result = await this.repo.deleteUser(id);
+            const result = await this.useCase.logoutUser(id);
             this.emitUserListChanges();
             return result;
         } catch (e) {
@@ -86,7 +92,7 @@ class UsersController {
     public async changeRole(id: string, role: string): Promise<string> {
         try {
             this.validateParams({ id, role }, ['id', 'role']);
-            const result = await this.repo.changeRole(id, role);
+            const result = await this.useCase.updateRole(id, role);
             this.emitUserListChanges();
             return result;
         } catch (e) {
@@ -97,7 +103,7 @@ class UsersController {
     public async updateLocation(id: string, gps_x: number, gps_y: number): Promise<string> {
         try {
             this.validateParams({ id, gps_x, gps_y }, ['id', 'gps_x', 'gps_y']);
-            const result = await this.repo.updateLocation(id, gps_x, gps_y);
+            const result = await this.useCaseMap.updateLocation(id, gps_x, gps_y);
             this.emitUserListChanges();
             return result;
         } catch (e) {
@@ -107,7 +113,7 @@ class UsersController {
 
     public async getListSeller(): Promise<ListUsers> {
         try {
-            return await this.repo.getListSeller();
+            return await this.useCaseMap.getListSeller();
         } catch (e) {
             throw new Error(this.handleError('getListSeller', e));
         }
@@ -115,7 +121,7 @@ class UsersController {
 
     public async getListCustomer(): Promise<ListUsers> {
         try {
-            return await this.repo.getListCustomer();
+            return await this.useCaseMap.getListCustomer();
         } catch (e) {
             throw new Error(this.handleError('getListCustomer', e));
         }

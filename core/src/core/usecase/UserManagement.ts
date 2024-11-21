@@ -1,7 +1,7 @@
 import User from "../entity/User"
 import UserRepository from "../repository/UserRepository"
 
-export default class SearchPokemon {
+export default class UserManager {
     // Repository can only be assigned once
     private readonly userRepo: UserRepository
 
