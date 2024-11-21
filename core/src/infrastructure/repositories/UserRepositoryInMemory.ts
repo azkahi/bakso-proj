@@ -6,6 +6,10 @@ import { v4 } from 'uuid';
 export default class UserRepositoryInMemory implements UserRepository {
   private ListUsers:ListUsers =  {}
 
+  public async getUserById(id: string): Promise<User | null> {
+    return this.ListUsers[id] || null;
+  }
+
   public async createUser(name: string, role: string, gps_x?: number, gps_y?: number): Promise<string> {
     const id = v4()
 
@@ -13,9 +17,9 @@ export default class UserRepositoryInMemory implements UserRepository {
       const newUser = new User(id, name, role, gps_x, gps_y)
       this.ListUsers[id] = newUser
 
-      return 'User created successfully'
+      return id
     } catch (e) {
-      return e.message
+      return 'An error has occurred'
     }
   }
 
